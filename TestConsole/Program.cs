@@ -25,7 +25,7 @@ namespace TestConsole
             //getExcelFile();
             // getExcelFileSGSCORTEMPLATE();
             //getExcelCORTemplateProp();
-             getTaxonomyData();
+            // getTaxonomyData();
             //getCorTemplatePropertiesData();
             //TestLength();
             //validateUser();
