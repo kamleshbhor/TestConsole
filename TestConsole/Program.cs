@@ -36,8 +36,119 @@ namespace TestConsole
             //TestPostAPI();
             //TestPutAPI();
             //TestDeleteAPI();
+            //string pwd = GetRegularString("U2FnaXRlYyEyMDA=");
+            //getCodeValueData();
+            getResourcesScript();
         }
 
+        public static void getResourcesScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        //                        string temp = string.Format(@"IF(NOT EXISTS(SELECT 1 FROM SGS_RESOURCES WITH(NOLOCK) WHERE RESOURCE_ID = {0}))
+                        //BEGIN
+                        //	INSERT INTO SGS_RESOURCES (RESOURCE_ID ,RESOURCE_TYPE_ID ,RESOURCE_TYPE_VALUE ,RESOURCE_DESCRIPTION ,CREATED_BY ,CREATED_DATE ,MODIFIED_BY ,MODIFIED_DATE ,UPDATE_SEQ )
+                        //		VALUES (  {0}  , 20001010  ,'F' ,'{1}' ,'system' ,GETDATE() ,'system' ,GETDATE() , 0  ) 
+                        //END
+                        //GO
+                        //", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString());
+
+                        string temp = string.Format(@"SELECT @RESOURCE_ID = RESOURCE_ID FROM [dbo].[SGS_RESOURCES](NOLOCK) WHERE RESOURCE_DESCRIPTION = '{0}'
+IF (@ROLE_ID>0 AND @RESOURCE_ID>0)
+BEGIN
+IF NOT EXISTS(SELECT 1 FROM SGS_SECURITY(NOLOCK) WHERE ROLE_ID = @ROLE_ID AND RESOURCE_ID = @RESOURCE_ID)
+INSERT INTO SGS_SECURITY([ROLE_ID],[RESOURCE_ID],[SECURITY_ID],[SECURITY_VALUE],[CREATED_BY],[CREATED_DATE],[MODIFIED_BY],[MODIFIED_DATE],[UPDATE_SEQ])
+VALUES (@ROLE_ID, @RESOURCE_ID, 11, '5','system',GETDATE(),'system',GETDATE(),0)
+END
+GO
+", xlRange.Cells[i, 2].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+        public static void getCodeValueData()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        string temp = string.Format(@"IF NOT EXISTS (SELECT  1 FROM SGS_CODE_VALUE WITH(NOLOCK) WHERE CODE_ID = 5001 AND CODE_VALUE = '{0}')
+BEGIN
+INSERT INTO dbo.SGS_CODE_VALUE (CODE_ID, CODE_VALUE, DESCRIPTION, DATA1, DATA2, DATA3, COMMENTS, START_DATE, END_DATE, CODE_VALUE_ORDER, LEGACY_CODE_ID, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, UPDATE_SEQ)
+VALUES (5001, '{0}', '{1}', '{2}', NULL, NULL, NULL, NULL, NULL, 0, NULL, 'Kamlesh.Bhor', GETDATE(), 'Kamlesh.Bhor', GETDATE(), 0)
+END
+GO
+", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i,3].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
         public static void getExcelCORTemplateProp()
         {
             //Create COM Objects. Create a COM object for everything that is referenced
@@ -569,6 +680,19 @@ END
                 set;
             }
         }
+
+        public static string GetRegularString(string astrEText)
+        {
+            string lstrTmp = "";
+            byte[] larrbtArrayASCII = Convert.FromBase64String(astrEText);
+
+            lstrTmp = System.Text.UTF8Encoding.UTF8.GetString(larrbtArrayASCII);
+
+            lstrTmp = UTF8Encoding.UTF8.GetString(larrbtArrayASCII);
+
+            return lstrTmp;
+        }
+
     }
 
 
