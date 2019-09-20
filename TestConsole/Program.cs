@@ -25,7 +25,7 @@ namespace TestConsole
             //getExcelFile();
             // getExcelFileSGSCORTEMPLATE();
             //getExcelCORTemplateProp();
-            // getTaxonomyData();
+            //getTaxonomyData();
             //getCorTemplatePropertiesData();
             //TestLength();
             //validateUser();
@@ -38,10 +38,328 @@ namespace TestConsole
             //TestDeleteAPI();
             //string pwd = GetRegularString("U2FnaXRlYyEyMDA=");
             //getCodeValueData();
-            getResourcesScript();
+            //getSecurityScript();
+            //getEmployeeScript();
+            //getScript();
+            //getFNTaxonomyScript();
+            //getFNAppConfigScript();
+            //getSystemSettingsScript();
+            HEBKnowtionScreenReferences();
         }
 
-        public static void getResourcesScript()
+        public static void HEBKnowtionScreenReferences()
+        {
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 1].Value2 != null)
+                    {
+                        string screenName = xlRange.Cells[i, 1].Value2.ToString();
+
+                        StringBuilder newText = new StringBuilder(screenName.Length * 2);
+                        newText.Append(screenName[0]);
+                        for (int j = 1; j < screenName.Length; j++)
+                        {
+                            if (char.IsUpper(screenName[j]))
+                                if ((screenName[j - 1] != ' ' && !char.IsUpper(screenName[j - 1])) ||
+                                    (char.IsUpper(screenName[j - 1]) &&
+                                     j < screenName.Length - 1 && !char.IsUpper(screenName[j + 1])))
+                                    newText.Append(' ');
+                            newText.Append(screenName[j]);
+                        }
+                        file.WriteLine(newText.ToString());
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+        }
+        public static void getSystemSettingsScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        string temp = string.Format(@"DECLARE @{0} VARCHAR(1000)= '{3}'
+IF NOT EXISTS(SELECT 1 FROM SGS_SYSTEM_SETTINGS WITH(NOLOCK) WHERE SETTING_NAME = '{1}') 
+BEGIN 
+ INSERT INTO dbo.SGS_SYSTEM_SETTINGS (SETTING_NAME, SETTING_TYPE, SETTING_VALUE, ENCRYPTED_FLAG)
+	VALUES ('{1}', '{2}',@{0}, NULL)
+END
+ELSE
+IF NOT EXISTS(SELECT 1 FROM SGS_SYSTEM_SETTINGS WITH(NOLOCK) WHERE SETTING_NAME = '{1}' AND SETTING_VALUE = @{0} )
+BEGIN 
+ UPDATE SGS_SYSTEM_SETTINGS SET SETTING_VALUE = @{0} WHERE SETTING_NAME = '{1}'
+END 
+", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString(), xlRange.Cells[i, 4].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+        public static void getFNTaxonomyScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        string temp = string.Format(@"IF NOT EXISTS(SELECT 1 FROM SGT_FN_TAXONOMY WITH(NOLOCK) WHERE DOC_TYPE='{2}')
+BEGIN
+	INSERT INTO SGT_FN_TAXONOMY(DOC_CLASS,CATEGORY,SUBCATEGORY,DOC_TYPE,DOC_DESCRIPTION,SECURITY,NOTIFICATION_FLAG,NOTIFICATION_EMAIL,CREATED_BY,CREATED_DATE,MODIFIED_BY,MODIFIED_DATE,UPDATE_SEQ)
+	VALUES('{0}','{1}','','{2}','{3}','{4}','{5}','','SAGIDOCS',GETDATE(),'SAGIDOCS',GETDATE(), 0)
+END
+GO
+                        ", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString(), xlRange.Cells[i, 4].Value2.ToString(), xlRange.Cells[i, 5].Value2.ToString(), xlRange.Cells[i, 6].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+
+        public static void getFNAppConfigScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        string temp = string.Format(@"IF NOT EXISTS(SELECT 1 FROM SGT_FN_APPCONFIG WITH(NOLOCK) WHERE [SETTING_NAME] = '{1}') 
+BEGIN
+	INSERT INTO [dbo].[SGT_FN_APPCONFIG]([SETTING_SYSTEM], [SETTING_NAME], [SETTING_VALUE],[SETTING_DESC]) VALUES 
+	('{0}','{1}','{2}','{3}')
+END
+ELSE
+BEGIN
+	IF NOT EXISTS(SELECT 1 FROM [SGT_FN_APPCONFIG] WITH(NOLOCK) WHERE [SETTING_NAME] = '{1}' AND [SETTING_VALUE] = '{2}')
+	UPDATE [dbo].[SGT_FN_APPCONFIG] SET [SETTING_VALUE] = '{2}' WHERE [SETTING_NAME] = '{1}'
+END
+                        ", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString(), xlRange.Cells[i, 4].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+        public static void getScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        //                        string temp = string.Format(@"IF NOT EXISTS(SELECT 1 FROM SGT_FN_METADATA(NOLOCK) WHERE METADATA_NAME = '{0}' AND METADATA_VALUE = '{1}')
+                        //BEGIN
+                        //INSERT INTO [dbo].[SGT_FN_METADATA](METADATA_NAME,METADATA_VALUE,METADATA_DESC,CREATED_BY,CREATED_DATE,MODIFIED_BY,MODIFIED_DATE,UPDATE_SEQ)
+                        //  VALUES('{0}','{1}','{2}','FILENET',GETDATE(),'FILENET',GETDATE(),0)
+                        //END
+                        //GO
+                        //                        ", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString());
+
+                        string temp = string.Format(@"IF NOT EXISTS(SELECT 1 FROM SGT_FN_SECURITY WITH(NOLOCK) WHERE SECURITY_POLICY = '{0}' AND SECURITY_ID = '{1}') 
+BEGIN
+	INSERT INTO SGT_FN_SECURITY(SECURITY_POLICY,SECURITY_ID,CREATED_BY,CREATED_DATE,MODIFIED_BY,MODIFIED_DATE,UPDATE_SEQ)
+	VALUES ('{0}','{1}','Kamlesh',GETDATE(),'Kamlesh',GETDATE(),0)
+END
+GO
+                        ", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString());
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+        public static void getEmployeeScript()
+        {
+            //Create COM Objects. Create a COM object for everything that is referenced
+            Excel.Application xlApp = new Excel.Application();
+            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(@"C:\Users\kamlesh.bhor\Desktop\Corr.xlsx");
+            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+            Excel.Range xlRange = xlWorksheet.UsedRange;
+
+            int rowCount = xlRange.Rows.Count;
+            int colCount = xlRange.Columns.Count;
+
+            using (var file = new StreamWriter(@"C:\Users\kamlesh.bhor\Desktop\Cor1.txt"))
+            {
+                //iterate over the rows and columns and print to the file as it appears in the file
+                //excel is not zero based!!
+                for (int i = 1; i <= rowCount; i++)
+                {
+                    // write the value to the console
+                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 2] != null && xlRange.Cells[i, 1].Value2 != null && xlRange.Cells[i, 2].Value2 != null)
+                    {
+                        string temp = string.Format(@"INSERT INTO [dbo].[SGT_EMPLOYEE] ([EMPLOYEE_ID], [FIRST_NAME], [LAST_NAME], [COUNTRY], [HOME_CITY], [CREATED_BY], [CREATED_DATE], [MODIFIED_BY], [MODIFIED_DATE], [UPDATE_SEQ]) 
+VALUES ({0}, '{1}', '{2}', '', '', 'EDMS', GETDATE(), 'EDMS', GETDATE(), 0)
+                        ", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString());
+
+
+                        file.WriteLine(temp);
+                    }
+                }
+                file.Close();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            //release com objects to fully kill excel process from running in the background
+            Marshal.ReleaseComObject(xlRange);
+            Marshal.ReleaseComObject(xlWorksheet);
+
+            //close and release
+            xlWorkbook.Close();
+            Marshal.ReleaseComObject(xlWorkbook);
+
+            //quit and release
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlApp);
+
+        }
+        public static void getSecurityScript()
         {
             //Create COM Objects. Create a COM object for everything that is referenced
             Excel.Application xlApp = new Excel.Application();
@@ -69,15 +387,15 @@ namespace TestConsole
                         //GO
                         //", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString());
 
-                        string temp = string.Format(@"SELECT @RESOURCE_ID = RESOURCE_ID FROM [dbo].[SGS_RESOURCES](NOLOCK) WHERE RESOURCE_DESCRIPTION = '{0}'
-IF (@ROLE_ID>0 AND @RESOURCE_ID>0)
+                        string temp = string.Format(@"IF(EXISTS(SELECT 1 FROM dbo.SGS_RESOURCES WITH(NOLOCK) WHERE RESOURCE_ID = {0}))
 BEGIN
-IF NOT EXISTS(SELECT 1 FROM SGS_SECURITY(NOLOCK) WHERE ROLE_ID = @ROLE_ID AND RESOURCE_ID = @RESOURCE_ID)
-INSERT INTO SGS_SECURITY([ROLE_ID],[RESOURCE_ID],[SECURITY_ID],[SECURITY_VALUE],[CREATED_BY],[CREATED_DATE],[MODIFIED_BY],[MODIFIED_DATE],[UPDATE_SEQ])
-VALUES (@ROLE_ID, @RESOURCE_ID, 11, '5','system',GETDATE(),'system',GETDATE(),0)
+IF NOT EXISTS(SELECT 1 FROM SGS_SECURITY WITH(NOLOCK) WHERE RESOURCE_ID = {0} and ROLE_ID = {1})
+BEGIN
+INSERT INTO[dbo].[SGS_SECURITY]([ROLE_ID],[RESOURCE_ID],[SECURITY_ID],[SECURITY_VALUE],[CREATED_BY],[CREATED_DATE],[MODIFIED_BY],[MODIFIED_DATE],[UPDATE_SEQ])
+VALUES({1}, {0},11, 5, 'Kamlesh.Bhor', GETDATE(),'Kamlesh.Bhor',GETDATE(),0)
 END
-GO
-", xlRange.Cells[i, 2].Value2.ToString());
+END
+", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString());
 
                         file.WriteLine(temp);
                     }
@@ -350,11 +668,15 @@ GO
                     {
                         string temp = string.Format(@"IF NOT EXISTS(SELECT 1 FROM [SGT_FILENET_TAXONOMY] WITH (NOLOCK) WHERE [CLASS_DESCRIPTION]='{1}' AND [CATEGORY_DESCRIPTION]='{3}' AND [DOC_TYPE]='{4}')
 BEGIN
-  INSERT INTO [dbo].[SGT_FILENET_TAXONOMY] ([CLASS_VALUE],[CLASS_DESCRIPTION],[CATEGORY_ID],[CATEGORY_VALUE],[CATEGORY_DESCRIPTION],[DOC_TYPE],[DOC_DESCRIPTION],[FN_SECURITY],[CREATED_BY],[CREATED_DATE],[MODIFIED_BY],[MODIFIED_DATE],[UPDATE_SEQ])
-  VALUES ('{0}','{1}',2757,'{2}','{3}','{4}','{5}','spModify','{6}',GETDATE(),'Kamlesh.Bhor',GETDATE(),	0)
+  INSERT INTO [dbo].[SGT_FILENET_TAXONOMY] ([CLASS_VALUE],[CLASS_DESCRIPTION],[CATEGORY_ID],[CATEGORY_VALUE],[CATEGORY_DESCRIPTION],[DOC_TYPE],[DOC_DESCRIPTION],[FN_SECURITY],[LEGACY_IND],[APPEALABLE_DOC_IND],[CREATED_BY],[CREATED_DATE],[MODIFIED_BY],[MODIFIED_DATE],[UPDATE_SEQ])
+  VALUES ('{0}','{1}',2757,'{2}','{3}','{4}','{5}','spModify','{6}',NULL,'ECM',GETDATE(),'ECM',GETDATE(),	0)
+END
+ELSE IF EXISTS(SELECT 1 FROM [SGT_FILENET_TAXONOMY] WITH (NOLOCK) WHERE [CLASS_DESCRIPTION]='{1}' AND [CATEGORY_DESCRIPTION]='{3}' AND [DOC_TYPE]='{4}')
+BEGIN
+	UPDATE [SGT_FILENET_TAXONOMY] SET [CATEGORY_VALUE]='{2}', [DOC_DESCRIPTION] = '{5}', [LEGACY_IND]='{6}', [APPEALABLE_DOC_IND] = NULL, [MODIFIED_BY] = 'ECM', [MODIFIED_DATE] = GETDATE() WHERE [CLASS_DESCRIPTION]='{1}' AND [CATEGORY_DESCRIPTION]='{3}' AND [DOC_TYPE]='{4}'
 END
 GO
-", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString(), xlRange.Cells[i, 4].Value2.ToString(), xlRange.Cells[i, 5].Value2.ToString(), xlRange.Cells[i, 6].Value2.ToString(), xlRange.Cells[i, 7].Value2.ToString());
+", xlRange.Cells[i, 1].Value2.ToString(), xlRange.Cells[i, 2].Value2.ToString(), xlRange.Cells[i, 3].Value2.ToString(), xlRange.Cells[i, 4].Value2.ToString(), (xlRange.Cells[i, 5].Value2.ToString()).Trim(), (xlRange.Cells[i, 6].Value2.ToString()).Trim(), xlRange.Cells[i, 7].Value2.ToString());
 
                         file.WriteLine(temp);
                     }
